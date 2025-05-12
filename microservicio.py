@@ -20,7 +20,9 @@ def devops():
 
     jwt_payload = {
         "to": to,
+        "from": from_,
         "message": message,
+        "timeToLifeSec": time_to_live_sec,
         "iat": datetime.datetime.utcnow()
     }
 
@@ -29,7 +31,8 @@ def devops():
 
     hostname = os.getenv("HOSTNAME", "local")
     response = {
-        "message": f"Hello {to} your message will be sent from {hostname}"
+        "message": f"Hello {to} your message will be sent from {hostname}",
+        "token": jwt_token
     }
 
     return jsonify(response), 200  # Success
@@ -37,3 +40,4 @@ def devops():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+    

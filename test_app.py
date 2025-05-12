@@ -25,3 +25,4 @@ def test_invalid_method():
     client = app.test_client()
     response = client.get("/DevOps")  # GET no está permitido
     assert response.status_code == 405
+    
