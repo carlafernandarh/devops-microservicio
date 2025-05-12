@@ -7,7 +7,8 @@ app = Flask(__name__)
 
 # Constantes de seguridad
 API_KEY = "2f5ae96c-b558-4c7b-a590-a501ae1c3f6c"
-JWT_SECRET = "123456"  
+JWT_SECRET = "123456"
+
 
 @app.route('/DevOps', methods=['POST'])
 def devops():
@@ -27,7 +28,6 @@ def devops():
         "to": to,
         "iat": datetime.datetime.utcnow()
     }
-    jwt_token = jwt.encode(jwt_payload, JWT_SECRET, algorithm="HS256")
 
     # Respuesta
     hostname = os.getenv("HOSTNAME", "default")
@@ -36,12 +36,11 @@ def devops():
     }
     return jsonify(response), 200
 
-# Rechazar otros métodos (GET, PUT, etc.)
-@app.errorhandler(405)
+
+@app.errorhandler(405) # Rechazar otros métodos (GET, PUT, etc.)
 def method_not_allowed(error):
     return "ERROR", 405
 
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
