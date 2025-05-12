@@ -1,45 +1,38 @@
 from flask import Flask, request, jsonify
-import jwt
 import datetime
+import jwt
 import os
 
 app = Flask(__name__)
 
-# Constantes de seguridad
-API_KEY = "2f5ae96c-b558-4c7b-a590-a501ae1c3f6c"
-JWT_SECRET = "123456"
-
 
 @app.route('/DevOps', methods=['POST'])
 def devops():
-    # Validar API Key
-    if request.headers.get('X-Parse-REST-API-Key') != API_KEY:
-        return jsonify({"error": "API Key inválida"}), 401
+    api_key = request.headers.get("X-Parse-REST-API-Key")
+    if api_key != "2f5ae96c-b558-4c7b-a590-a501ae1c3f6c":
+        return jsonify({"message": "Unauthorized"}), 401
 
-    # Obtener datos del cuerpo JSON
-    try:
-        data = request.get_json()
-        to = data["to"]
-    except Exception:
-        return jsonify({"error": "Formato JSON inválido"}), 400
+    data = request.get_json()
+    message = data.get("message")
+    to = data.get("to")
+    from_ = data.get("from")
+    time_to_live_sec = data.get("timeToLifeSec")
 
-    # Generar JWT único
     jwt_payload = {
         "to": to,
+        "message": message,
         "iat": datetime.datetime.utcnow()
     }
 
-    # Respuesta
-    hostname = os.getenv("HOSTNAME", "default")
+    secret_key = "secret"
+    jwt_token = jwt.encode(jwt_payload, secret_key, algorithm="HS256")
+
+    hostname = os.getenv("HOSTNAME", "local")
     response = {
         "message": f"Hello {to} your message will be sent from {hostname}"
     }
-    return jsonify(response), 200
 
-
-@app.errorhandler(405) # Rechazar otros métodos (GET, PUT, etc.)
-def method_not_allowed(error):
-    return "ERROR", 405
+    return jsonify(response), 200  # Success
 
 
 if __name__ == '__main__':
